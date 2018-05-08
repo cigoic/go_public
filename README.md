@@ -2,4 +2,6 @@
 Public repository for Go source files
 
 Folders:
-  alg  - Examples for Data Structures and Algorithms in Go
+
+	alg 			- Examples of Data Structures and Algorithms in Go
+	machine_learning	- Examples of Machine Learning with Go
