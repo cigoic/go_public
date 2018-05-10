@@ -25,5 +25,4 @@ lgo - https://github.com/yunabe/lgo
 
 ### TODO:
 
-* Add Tensorflow support to lgo's Dockerfile
 * Refine gophernotes' Dockerfile to adopt content from lgo's Dockerfile.
