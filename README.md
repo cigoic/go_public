@@ -6,6 +6,10 @@ Folders:
 	alg 			- Examples of Data Structures and Algorithms in Go
 	machine_learning	- Examples of Machine Learning with Go
 
+Files:
+
+	Dockerfile		- Help you create a docker image which contains a Jupyter Notebook w/ Go and Tensorflow support.
+
 
 ### Learning Resource
 
