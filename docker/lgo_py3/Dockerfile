@@ -31,7 +31,7 @@ WORKDIR ${HOME}
 RUN go get github.com/yunabe/lgo/cmd/lgo && go get -d github.com/yunabe/lgo/cmd/lgo-internal
 
 # Install packages used from example notebooks.
-RUN go get -u github.com/nfnt/resize \
+ENV GO_PKGS github.com/nfnt/resize \
 	gonum.org/v1/gonum/... \
 	gonum.org/v1/plot/... \
 	github.com/wcharczuk/go-chart \
@@ -54,30 +54,9 @@ RUN go get -u github.com/nfnt/resize \
 	github.com/stretchr/testify/assert \
 	github.com/lib/pq
 
+RUN go get -u ${GO_PKGS}
 # Install lgo
-RUN lgo install && lgo installpkg \
-	github.com/nfnt/resize \
-	gonum.org/v1/gonum/... \
-	gonum.org/v1/plot/... \
-	github.com/wcharczuk/go-chart \
-	github.com/kniren/gota/... \
-	github.com/sajari/regression \
-	github.com/sjwhitworth/golearn/... \
-	go-hep.org/x/hep/csvutil/... \
-	go-hep.org/x/hep/fit \
-	go-hep.org/x/hep/hbook \
-	github.com/montanaflynn/stats \
-	github.com/boltdb/bolt \
-	github.com/patrickmn/go-cache \
-	github.com/chewxy/math32 \
-	github.com/chewxy/hm \
-	gorgonia.org/vecf64 \
-	gorgonia.org/vecf32 \
-	github.com/awalterschulze/gographviz \
-	github.com/leesper/go_rng \
-	github.com/pkg/errors \
-	github.com/stretchr/testify/assert \
-	github.com/lib/pq
+RUN lgo install && lgo installpkg ${GO_PKGS}
 RUN python3 $GOPATH/src/github.com/yunabe/lgo/bin/install_kernel
 
 # TensorBoard
