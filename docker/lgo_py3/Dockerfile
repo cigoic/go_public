@@ -17,8 +17,7 @@ RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
  	&& tar -C /usr/local -xzf golang.tar.gz \
     	&& rm golang.tar.gz \
     	&& mkdir -p "$GOPATH/src" "$GOPATH/bin" \
-	&& chmod -R 777 "$GOPATH" \
- 	&& curl -fsSL https://git.io/vDyrl -o /usr/local/bin/go-wrapper
+	&& chmod -R 777 "$GOPATH"
 # Install Tensorflow Go
 ENV TF_TYPE cpu 
 ENV TARGET_DIRECTORY /usr/local
@@ -31,6 +30,12 @@ RUN apt-get update && apt-get install -y libzmq3-dev python3-pip \
 	git \
 	musl-dev \
         mercurial \
+	# gcc for cgo
+	# g++ \
+	# gcc \
+	# libc6-dev \
+	# make \
+	# pkg-config \
 	&& rm -rf /var/lib/apt/lists/*
 RUN curl https://bootstrap.pypa.io/get-pip.py | python3 && pip3 install -U jupyter jupyterlab && jupyter serverextension enable --py jupyterlab --sys-prefix
 
@@ -81,17 +86,15 @@ ENV GO_PKGS github.com/nfnt/resize \
 	github.com/leesper/go_rng \
 	github.com/pkg/errors \
 	github.com/stretchr/testify/assert \
-	github.com/lib/pq
+	github.com/lib/pq \
+# Install Tensorflow Go
+	github.com/tensorflow/tensorflow/tensorflow/go
 
 RUN go get -u ${GO_PKGS}
-
-# Install Tensorflow Go
-RUN go get github.com/tensorflow/tensorflow/tensorflow/go \
-	&& go test github.com/tensorflow/tensorflow/tensorflow/go
+RUN go test github.com/tensorflow/tensorflow/tensorflow/go
 
 # Install lgo
-RUN lgo install && lgo installpkg ${GO_PKGS} \
-	github.com/tensorflow/tensorflow/tensorflow/go
+RUN lgo install && lgo installpkg ${GO_PKGS}
 RUN python3 $GOPATH/src/github.com/yunabe/lgo/bin/install_kernel
 
 # TensorBoard
