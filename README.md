@@ -17,6 +17,8 @@ Folders:
 4. [Data Oriented Design](https://cigoic.wordpress.com/2017/11/05/data-oriented-design-2/)
 5. [System Programming in Go](https://cigoic.wordpress.com/2017/10/31/system-programming-in-go/)
 
+* Skill Plan - [Be a Go Developer](https://cigoic.wordpress.com/2018/05/20/skill-card-to-be-a-go-developer)
+
 ### Configuration
 
 1. [NeoVim Configuration for Go](https://cigoic.wordpress.com/2017/08/31/neovim-configuration-for-go/)
