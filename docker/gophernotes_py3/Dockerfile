@@ -83,7 +83,8 @@ RUN go get -insecure -t -u gonum.org/v1/plot/... \
 	&& go get github.com/leesper/go_rng \
 	&& go get github.com/pkg/errors \
 	&& go get github.com/stretchr/testify/assert \
-	&& go get github.com/lib/pq
+	&& go get github.com/lib/pq \
+	&& go get github.com/pa-m/sklearn
 # clean
 RUN find /usr/lib/python* -name __pycache__ | xargs rm -r \
 	&& rm -rf /var/lib/apt/lists/* \

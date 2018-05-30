@@ -87,6 +87,7 @@ ENV GO_PKGS github.com/nfnt/resize \
 	github.com/pkg/errors \
 	github.com/stretchr/testify/assert \
 	github.com/lib/pq \
+	github.com/pa-m/sklearn \
 # Install Tensorflow Go
 	github.com/tensorflow/tensorflow/tensorflow/go
 
