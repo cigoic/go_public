@@ -1,12 +1,12 @@
 # REF:
 # https://github.com/yunabe/lgo/blob/master/docker/image_py3/Dockerfile
 
-#FROM golang:1.9.6
+#FROM golang:1.9.7
 FROM tensorflow/tensorflow                                                           
 MAINTAINER JimChiu
-ENV GOLANG_VERSION 1.9.6
+ENV GOLANG_VERSION 1.9.7
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
-ENV GOLANG_DOWNLOAD_SHA256 d1eb07f99ac06906225ac2b296503f06cc257b472e7d7817b8f822fe3766ebfe
+ENV GOLANG_DOWNLOAD_SHA256 88573008f4f6233b81f81d8ccf92234b4f67238df0f0ab173d75a302a1f3d6ee
 
 # Install Jupyter Notebook
 RUN apt-get update && apt-get install -y libzmq3-dev python3-pip \
