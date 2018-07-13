@@ -107,4 +107,12 @@ EXPOSE 8888
 # 1. Do not use ENTRYPOINT because mybinder need to run a custom command.
 # 2. To use JupyterLab, replace "notebook" with "lab".
 # 3. Set --allow-root in case you want to run jupyter as root.
+
+# Configure Jupyter Notebook
+RUN jupyter notebook --generate-config
+RUN echo "c = get_config()" >> ${HOME}/.jupyter/jupyter_notebook_config.py
+RUN echo "c.IPKernelApp.pylab = 'inline'" >> ${HOME}/.jupyter/jupyter_notebook_config.py
+RUN echo "c.NotebookApp.open_browser = False" >> ${HOME}/.jupyter/jupyter_notebook_config.py
+RUN echo "c.NotebookApp.token = ''" >> ${HOME}/.jupyter/jupyter_notebook_config.py
+
 CMD ["jupyter", "notebook", "--no-browser", "--ip=0.0.0.0"]
