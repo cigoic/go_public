@@ -3,7 +3,7 @@
 # =======================================================================
 #
 # Run the following commend along with this Dockerfile
-# 	$ docker build -t myname/tfgo:1.12 .
+# 	$ docker build -t ${TARGET_OS}/tfgo:1.12 .
 # 
 # To run docker image, run the following commend:
 # 	$ docker run -it -p 8888:8888 <docker_image>
@@ -23,11 +23,11 @@ FROM tensorflow/tensorflow:1.13.1-py3-jupyter
 MAINTAINER JimChiu
 
 ENV GOLANG_VERSION 1.12
-# Build For Mac: using "TARGET_ARCH darwin", and modify SHA256 value by checking the following URL:
+# Build For Mac: using "TARGET_OS darwin", and modifying SHA256 value by checking the following URL:
 # https://golang.org/dl/
-ENV TARGET_ARCH linux
-ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.$TARGET_ARCH-amd64.tar.gz
-ENV GOLANG_DOWNLOAD_SHA256 750a07fef8579ae4839458701f4df690e0b20b8bcce33b437e4df89c451b6f13
+ENV TARGET_OS linux
+ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go${GOLANG_VERSION}.${TARGET_OS}-amd64.tar.gz
+ENV GOLANG_DOWNLOAD_SHA256 6c7e07349403f71588ef4e93a6d4ae31f8e5de1497a0a42fd998fe9b6bd07c8e
 # Set up golang
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
@@ -75,8 +75,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # For GPU version: Use "TF_TYPE gpu" instead
 ENV TF_TYPE cpu 
 ENV TARGET_DIRECTORY /usr/local
-RUN curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-${TARGET_ARCH}-x86_64-1.12.0.tar.gz" | tar -C $TARGET_DIRECTORY -xz
-#RUN curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-$(go env GOOS)-x86_64-1.12.0.tar.gz" | tar -C $TARGET_DIRECTORY -xz
+RUN curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-${TARGET_OS}-x86_64-${GOLANG_VERSION}.tar.gz" | tar -C $TARGET_DIRECTORY -xz
+#RUN curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-$(go env GOOS)-x86_64-${GOLANG_VERSION}.tar.gz" | tar -C $TARGET_DIRECTORY -xz
 RUN ldconfig
 RUN go get github.com/tensorflow/tensorflow/tensorflow/go \
 	&& go test github.com/tensorflow/tensorflow/tensorflow/go
