@@ -43,15 +43,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Notebook Dependencies
         libzmq3-dev \
         build-essential \
-        python3-pip \
+        # python3-pip \
         git \
 	musl-dev \
         mercurial \
 # Install Python and Jupyter Notebook
-	&& curl https://bootstrap.pypa.io/get-pip.py | python3 \
+	# && curl https://bootstrap.pypa.io/get-pip.py | python3 \
 	&& pip install --upgrade pip \
-	&& python3 -m pip install ipykernel \
-	&& python3 -m ipykernel install --user
+	# && python3 -m pip install ipykernel \
+	# && python3 -m ipykernel install --user
+# Install Python popular Data Science libraries
+	&& pip install --user pandas matplotlib scikit-learn seaborn xlrd
 # Intall Go
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
 	&& echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
