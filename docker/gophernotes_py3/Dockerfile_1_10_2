@@ -1,40 +1,25 @@
-# =======================================================================
-# Build a docker image containes Jupyter Notebook for Go & Tensorflow-CPU
-# =======================================================================
-#
+# Build a docker image containes Jupyter Notebook for Go & Tensorflow
 # Run the following commend along with this Dockerfile
-# 	$ docker build -t myname/tfgo:1.12 .
+# $ docker build -t myname/gophernotes:1.10.2 .
 # 
 # To run docker image, run the following commend:
-# 	$ docker run -it -p 8888:8888 <docker_image>
-# or
-# 	$ docker run -it -p 8888:8888 <docker_image> bash
+# $ docker run -it -p 8888:8888 <docker_image>
 #
-# Reference:
+# REF:
 # https://github.com/gopherdata/gophernotes/blob/master/Dockerfile.DS
-#
-# Target Environment:
-#	* Linux platform
-#	* Go v1.12
-#	* Tensorflow CPU v1.13.1 with Python3 and Jupyter Notebook support
-#	* Support Go's Data Science packages
 
-FROM tensorflow/tensorflow:1.13.1-py3-jupyter 
+FROM tensorflow/tensorflow
 MAINTAINER JimChiu
 
-ENV GOLANG_VERSION 1.12
-# Build For Mac: using "TARGET_ARCH darwin", and modify SHA256 value by checking the following URL:
-# https://golang.org/dl/
-ENV TARGET_ARCH linux
-ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.$TARGET_ARCH-amd64.tar.gz
-ENV GOLANG_DOWNLOAD_SHA256 750a07fef8579ae4839458701f4df690e0b20b8bcce33b437e4df89c451b6f13
+ENV GOLANG_VERSION 1.10.2
+ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
+ENV GOLANG_DOWNLOAD_SHA256 4b677d698c65370afa33757b6954ade60347aaca310ea92a63ed717d7cb0c2ff
 # Set up golang
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	ca-certificates \
-	curl \
 # Install gcc for cgo
         g++ \
         gcc \
@@ -65,18 +50,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	&& go get golang.org/x/tools/cmd/goimports \
 	&& go get -tags zmq_3_x github.com/gopherds/gophernotes \
 	&& mkdir -p ~/.ipython/kernels/gophernotes \
-    	&& cp -r $GOPATH/src/github.com/gopherds/gophernotes/kernel/* ~/.ipython/kernels/gophernotes
-#	&& mv /notebooks/* /go
+    	&& cp -r $GOPATH/src/github.com/gopherds/gophernotes/kernel/* ~/.ipython/kernels/gophernotes \
+	&& mv /notebooks/* /go
 
 # Install Tensorflow Go
-# You can modify the version by visting the following URL:
-# https://www.tensorflow.org/install/lang_c
-#
-# For GPU version: Use "TF_TYPE gpu" instead
 ENV TF_TYPE cpu 
 ENV TARGET_DIRECTORY /usr/local
-RUN curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-${TARGET_ARCH}-x86_64-1.12.0.tar.gz" | tar -C $TARGET_DIRECTORY -xz
-#RUN curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-$(go env GOOS)-x86_64-1.12.0.tar.gz" | tar -C $TARGET_DIRECTORY -xz
+RUN curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-$(go env GOOS)-x86_64-1.8.0.tar.gz" | tar -C $TARGET_DIRECTORY -xz
 RUN ldconfig
 RUN go get github.com/tensorflow/tensorflow/tensorflow/go \
 	&& go test github.com/tensorflow/tensorflow/tensorflow/go
@@ -85,7 +65,7 @@ RUN go get -insecure -t -u gonum.org/v1/plot/... \
 	&& go get -insecure gonum.org/v1/gonum/... \
 	&& go get -t -u github.com/kniren/gota/... \
 	&& go get github.com/sajari/regression \
-#	&& go get github.com/sjwhitworth/golearn/... \
+	&& go get github.com/sjwhitworth/golearn/... \
 	&& go get -insecure go-hep.org/x/hep/csvutil/... \
 	&& go get -insecure go-hep.org/x/hep/fit \
 	&& go get -insecure go-hep.org/x/hep/hbook \
@@ -119,5 +99,4 @@ EXPOSE 8888
 WORKDIR "/go"
 
 #CMD ["jupyter_notebook_config.py"]
-#CMD ["/run_jupyter.sh", "--no-browser", "--allow-root", "--ip=0.0.0.0"]
-CMD ["jupyter", "notebook", "--no-browser", "--allow-root", "--ip=0.0.0.0"]
+CMD ["/run_jupyter.sh", "--no-browser", "--allow-root", "--ip=0.0.0.0"]

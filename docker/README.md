@@ -4,7 +4,7 @@
 
 Files:
 
-* gophernotes_py3/Dockerfile	- Based on official Tensorflow docker image. Create a new image with Jupyter Notebook + Go + Tensorflow support.
+* gophernotes_py3/Dockerfile	- Based on official Tensorflow docker image. Create a new image with Jupyter Notebook + Go + Tensorflow-CPU support.
 * lgo_py3/Dockerfile		- Based on official Golang docker image. Using lgo(better support ability).
 
 ### 測試是否安裝成功
@@ -24,5 +24,3 @@ lgo - https://github.com/yunabe/lgo
 
 
 ### TODO:
-
-* Refine gophernotes' Dockerfile to adopt content from lgo's Dockerfile.
