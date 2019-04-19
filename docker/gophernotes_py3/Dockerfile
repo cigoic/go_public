@@ -35,18 +35,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	ca-certificates \
 	curl \
 # Install gcc for cgo
-        g++ \
-        gcc \
-        libc6-dev \
-        make \
-        pkg-config \
+	g++ \
+	gcc \
+	libc6-dev \
+	make \
+	pkg-config \
 # Notebook Dependencies
-        libzmq3-dev \
-        build-essential \
-        # python3-pip \
-        git \
+	libzmq3-dev \
+	build-essential \
+	# python3-pip \
+	git \
 	musl-dev \
-        mercurial \
+	mercurial \
 # Install Python and Jupyter Notebook
 	# && curl https://bootstrap.pypa.io/get-pip.py | python3 \
 	&& pip install --upgrade pip \
@@ -58,15 +58,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
 	&& echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
  	&& tar -C /usr/local -xzf golang.tar.gz \
-    	&& rm golang.tar.gz \
-    	&& mkdir -p "$GOPATH/src" "$GOPATH/bin" \
+    && rm golang.tar.gz \
+    && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
 	&& chmod -R 777 "$GOPATH" \
  	&& curl -fsSL https://git.io/vDyrl -o /usr/local/bin/go-wrapper \
 # Install Gophernotes
 	&& go get golang.org/x/tools/cmd/goimports \
 	&& go get -tags zmq_3_x github.com/gopherds/gophernotes \
 	&& mkdir -p ~/.ipython/kernels/gophernotes \
-        && cp -r $GOPATH/src/github.com/gopherds/gophernotes/kernel/* ~/.ipython/kernels/gophernotes
+	&& cp -r $GOPATH/src/github.com/gopherds/gophernotes/kernel/* ~/.ipython/kernels/gophernotes
 #	&& mv /notebooks/* /go
 
 # Install Tensorflow Go
@@ -99,7 +99,7 @@ RUN go get -insecure -t -u gonum.org/v1/plot/... \
 	# && go get github.com/chewxy/vecf64 \
 	# && go get github.com/chewxy/vecf32 \
 	&& go get gorgonia.org/vecf64 \
-        && go get gorgonia.org/vecf32 \
+    && go get gorgonia.org/vecf32 \
 	# && go get github.com/gonum/... \
 	&& go get github.com/awalterschulze/gographviz \
 	&& go get github.com/leesper/go_rng \

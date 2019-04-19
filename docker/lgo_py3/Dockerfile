@@ -2,17 +2,21 @@
 # https://github.com/yunabe/lgo/blob/master/docker/image_py3/Dockerfile
 
 #FROM golang:1.9.7
-FROM tensorflow/tensorflow                                                           
+FROM intelaipg/intel-optimized-tensorflow:latest-mkl-py3                                          
 MAINTAINER JimChiu
 ENV GOLANG_VERSION 1.9.7
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
 ENV GOLANG_DOWNLOAD_SHA256 88573008f4f6233b81f81d8ccf92234b4f67238df0f0ab173d75a302a1f3d6ee
 
 # Install Jupyter Notebook
-RUN apt-get update && apt-get install -y libzmq3-dev python3-pip \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	ca-certificates \
+	curl \
+	# libzmq3-dev \
+	# python3-pip \
 	git \
 	musl-dev \
-        mercurial \
+    mercurial \
 # gcc for cgo
 	# g++ \
 	# gcc \
@@ -53,8 +57,17 @@ RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
     	&& mkdir -p "$GOPATH/src" "$GOPATH/bin"
 
 # Install Tensorflow Go
-RUN curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-$(go env GOOS)-x86_64-1.8.0.tar.gz" |  tar -C $TARGET_DIRECTORY -xz
+ENV TFLIB_VERSION 1.13.1
+RUN curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-${TARGET_OS}-x86_64-${TFLIB_VERSION}.tar.gz" | tar -C $TARGET_DIRECTORY -xz
 RUN ldconfig
+
+# Install Python popular Data Science libraries
+RUN pip3 install --user pandas matplotlib scikit-learn seaborn xlrd
+
+# clean
+RUN find /usr/lib/python* -name __pycache__ | xargs rm -r \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& rm -rf /var/cache/apk/*
 
 # Appply correct permission and switch to USER account
 RUN chown -R ${NB_USER}:${NB_USER} ${HOME} $GOPATH $LGOPATH
@@ -65,16 +78,19 @@ WORKDIR ${HOME}
 RUN go get github.com/yunabe/lgo/cmd/lgo && go get -d github.com/yunabe/lgo/cmd/lgo-internal
 
 # Install packages used from example notebooks.
-ENV GO_PKGS github.com/nfnt/resize \
-	gonum.org/v1/gonum/... \
-	gonum.org/v1/plot/... \
-	github.com/wcharczuk/go-chart \
-	github.com/kniren/gota/... \
-	github.com/sajari/regression \
-	github.com/sjwhitworth/golearn/... \
+ENV GO_ITPKGS \
+	gonum.org/v1/plot/... 
+ENV GO_IPKGS \
+#	gonum.org/v1/gonum/... \
 	go-hep.org/x/hep/csvutil/... \
 	go-hep.org/x/hep/fit \
-	go-hep.org/x/hep/hbook \
+	go-hep.org/x/hep/hbook
+ENV GO_PKGS \
+	github.com/kniren/gota/... \
+	github.com/nfnt/resize \
+	github.com/sajari/regression \
+#	github.com/sjwhitworth/golearn/... \
+	github.com/wcharczuk/go-chart \
 	github.com/montanaflynn/stats \
 	github.com/boltdb/bolt \
 	github.com/patrickmn/go-cache \
@@ -91,12 +107,15 @@ ENV GO_PKGS github.com/nfnt/resize \
 # Install Tensorflow Go
 	github.com/tensorflow/tensorflow/tensorflow/go
 
-RUN go get -u ${GO_PKGS}
+RUN go get ${GO_IPKGS}
+RUN go get -t -u ${GO_ITPKGS}
+RUN go get ${GO_PKGS}
 RUN go test github.com/tensorflow/tensorflow/tensorflow/go
 
 # Install lgo
-RUN lgo install && lgo installpkg ${GO_PKGS}
+RUN lgo install && lgo installpkg ${GO_IPKGS} ${GO_ITPKGS} ${GO_PKGS}
 RUN python3 $GOPATH/src/github.com/yunabe/lgo/bin/install_kernel
+
 
 # TensorBoard
 EXPOSE 6006
