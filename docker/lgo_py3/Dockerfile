@@ -80,12 +80,10 @@ RUN go get github.com/yunabe/lgo/cmd/lgo && go get -d github.com/yunabe/lgo/cmd/
 # Install packages used from example notebooks.
 ENV GO_ITPKGS \
 	gonum.org/v1/plot/... 
-ENV GO_IPKGS \
-#	gonum.org/v1/gonum/... \
-	go-hep.org/x/hep/csvutil/... \
-	go-hep.org/x/hep/fit \
-	go-hep.org/x/hep/hbook
 ENV GO_PKGS \
+#	go-hep.org/x/hep/csvutil/... \
+	go-hep.org/x/hep/fit \
+	go-hep.org/x/hep/hbook \
 	github.com/kniren/gota/... \
 	github.com/nfnt/resize \
 	github.com/sajari/regression \
@@ -107,13 +105,13 @@ ENV GO_PKGS \
 # Install Tensorflow Go
 	github.com/tensorflow/tensorflow/tensorflow/go
 
-RUN go get ${GO_IPKGS}
+
 RUN go get -t -u ${GO_ITPKGS}
 RUN go get ${GO_PKGS}
 RUN go test github.com/tensorflow/tensorflow/tensorflow/go
 
 # Install lgo
-RUN lgo install && lgo installpkg ${GO_IPKGS} ${GO_ITPKGS} ${GO_PKGS}
+RUN lgo install && lgo installpkg ${GO_ITPKGS} ${GO_PKGS}
 RUN python3 $GOPATH/src/github.com/yunabe/lgo/bin/install_kernel
 
 
@@ -134,4 +132,4 @@ RUN echo "c.IPKernelApp.pylab = 'inline'" >> ${HOME}/.jupyter/jupyter_notebook_c
 RUN echo "c.NotebookApp.open_browser = False" >> ${HOME}/.jupyter/jupyter_notebook_config.py
 RUN echo "c.NotebookApp.token = ''" >> ${HOME}/.jupyter/jupyter_notebook_config.py
 
-CMD ["jupyter", "notebook", "--no-browser", "--ip=0.0.0.0"]
+CMD ["jupyter", "lab", "--no-browser", "--ip=0.0.0.0"]
