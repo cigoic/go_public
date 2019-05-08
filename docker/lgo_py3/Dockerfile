@@ -4,9 +4,9 @@
 #FROM golang:1.9.7
 FROM intelaipg/intel-optimized-tensorflow:latest-mkl-py3                                          
 MAINTAINER JimChiu
-ENV GOLANG_VERSION 1.9.7
-ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
-ENV GOLANG_DOWNLOAD_SHA256 88573008f4f6233b81f81d8ccf92234b4f67238df0f0ab173d75a302a1f3d6ee
+ARG GOLANG_VERSION=1.9.7
+ARG GOLANG_DOWNLOAD_URL=https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz
+ARG GOLANG_DOWNLOAD_SHA256=88573008f4f6233b81f81d8ccf92234b4f67238df0f0ab173d75a302a1f3d6ee
 
 # Install Jupyter Notebook
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -44,11 +44,12 @@ RUN adduser --disabled-password \
     ${NB_USER}
 
 # Set up golang
-ENV TF_TYPE cpu 
+ARG TF_TYPE=cpu 
 ENV TARGET_DIRECTORY /usr/local
 ENV GOROOT ${TARGET_DIRECTORY}/go
 ENV GOPATH ${HOME}/go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+# add .local/bin to PATH for Tensorflow 2.0
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$HOME/.local/bin:$PATH
 # Intall Go
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
 	&& echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
@@ -57,12 +58,14 @@ RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
     	&& mkdir -p "$GOPATH/src" "$GOPATH/bin"
 
 # Install Tensorflow Go
-ENV TFLIB_VERSION 1.13.1
-RUN curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-${TARGET_OS}-x86_64-${TFLIB_VERSION}.tar.gz" | tar -C $TARGET_DIRECTORY -xz
+ARG TFLIB_VERSION=1.13.1
+ARG TARGET_OS=linux
+RUN curl -L \
+"https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-${TARGET_OS}-x86_64-${TFLIB_VERSION}.tar.gz" | tar -C $TARGET_DIRECTORY -xz
 RUN ldconfig
 
 # Install Python popular Data Science libraries
-RUN pip3 install --user pandas matplotlib scikit-learn seaborn xlrd
+RUN pip3 install --user pandas matplotlib scikit-learn seaborn xlrd -q tensorflow==2.0.0-alpha0
 
 # clean
 RUN find /usr/lib/python* -name __pycache__ | xargs rm -r \
@@ -80,6 +83,8 @@ RUN go get github.com/yunabe/lgo/cmd/lgo && go get -d github.com/yunabe/lgo/cmd/
 # Install packages used from example notebooks.
 ENV GO_ITPKGS \
 	gonum.org/v1/plot/... 
+ENV GO_IPKGS \
+	gonum.org/v1/gonum/...
 ENV GO_PKGS \
 #	go-hep.org/x/hep/csvutil/... \
 	go-hep.org/x/hep/fit \
@@ -102,13 +107,16 @@ ENV GO_PKGS \
 	github.com/stretchr/testify/assert \
 	github.com/lib/pq \
 	github.com/pa-m/sklearn \
-# Install Tensorflow Go
+# Install Tensorflow Go & examples
 	github.com/tensorflow/tensorflow/tensorflow/go
+ENV TFGO_EX \
+	github.com/cigoic/tensorflow-and-go
 
-
-RUN go get -t -u ${GO_ITPKGS}
+#RUN go get ${GO_IPKGS}
+#RUN go get -u ${GO_ITPKGS}
 RUN go get ${GO_PKGS}
 RUN go test github.com/tensorflow/tensorflow/tensorflow/go
+RUN go get ${TFGO_EX}
 
 # Install lgo
 RUN lgo install && lgo installpkg ${GO_ITPKGS} ${GO_PKGS}
