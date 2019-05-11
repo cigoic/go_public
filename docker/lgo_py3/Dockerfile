@@ -2,7 +2,9 @@
 # https://github.com/yunabe/lgo/blob/master/docker/image_py3/Dockerfile
 
 #FROM golang:1.9.7
-FROM intelaipg/intel-optimized-tensorflow:latest-mkl-py3                                          
+#FROM intelaipg/intel-optimized-tensorflow:latest-mkl-py3
+FROM tensorflow/tensorflow:latest-gpu-py3
+                                          
 MAINTAINER JimChiu
 ARG GOLANG_VERSION=1.9.7
 ARG GOLANG_DOWNLOAD_URL=https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz
@@ -65,7 +67,7 @@ RUN curl -L \
 RUN ldconfig
 
 # Install Python popular Data Science libraries
-RUN pip3 install --user pandas matplotlib scikit-learn seaborn xlrd -q tensorflow==2.0.0-alpha0
+RUN pip3 install --user pandas matplotlib scikit-learn seaborn xlrd -q tensorflow-gpu==2.0.0-alpha0
 
 # clean
 RUN find /usr/lib/python* -name __pycache__ | xargs rm -r \
