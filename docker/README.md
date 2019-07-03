@@ -4,6 +4,7 @@
 
 Files:
 
+* clearlinux-ml			- Based on official Clear Linux Deep Learning Stack - Intel MKL dockerfile.
 * gophernotes_py3/Dockerfile	- Based on official Tensorflow docker image. Create a new image with Jupyter Notebook + Go + Tensorflow-CPU support.
 * lgo_py3/Dockerfile		- Based on official Golang docker image. Using lgo(better support ability).
 
