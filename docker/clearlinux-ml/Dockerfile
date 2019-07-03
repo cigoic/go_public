@@ -5,6 +5,8 @@
 FROM clearlinux as base
 LABEL maintainer=liang.case@gmail.com
 
+# tf with vnni support and bug fixes
+#ARG TF_COMMIT_SHA=47ab68d265a96b6e7be06afd1b4b47e0114c0ee9
 ARG swupd_args
 
 # update os and add required bundles
@@ -28,10 +30,11 @@ RUN curl -L https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VER}/b
 RUN chmod +x /tmp/bazel-installer-linux-x86_64.sh &&\
 	./bazel-installer-linux-x86_64.sh --user 
 
-# clone build and install tensorflow 1.13.1
+# clone build and install tensorflow
 WORKDIR /tensorflow_src
 RUN git clone https://github.com/tensorflow/tensorflow.git /tensorflow_src && \
-	git checkout -b 2.0.0-beta1
+	git checkout r2.0
+#    git checkout -b quantized ${TF_COMMIT_SHA}
 
 RUN export CC_OPT_FLAGS=$(grep flags -m1 /proc/cpuinfo | cut -d ":" -f 2 | tr '[:upper:]' '[:lower:]' | { read FLAGS; OPT="-march=broadwell -mtune=native"; for flag in $FLAGS; do case "$flag" in "sse4_1" | "sse4_2" | "ssse3" | "fma" | "cx16" | "popcnt" | "avx" | "avx2") OPT+=" -m$flag";; esac; done; MODOPT=${OPT//_/\.}; echo "$MODOPT"; })
 
@@ -81,6 +84,7 @@ RUN bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tf/
 FROM clearlinux
 LABEL maintainer=liang.case@gmail.com
 
+#ARG HOROVOD_VERSION=0.16.1
 ARG swupd_args
 
 # update os and add required bundles
@@ -103,6 +107,10 @@ RUN pip uninstall -y tensorflow tensorboard &&\
     pip install --upgrade pip protobuf>=3.7
 COPY --from=base /tmp/tf/*.whl /tmp/.
 RUN pip --no-cache-dir  install /tmp/tensorflow*.whl
+
+# install horovod
+# RUN HOROVOD_WITH_TENSORFLOW=1 \
+#    pip --no-cache-dir install horovod==${HOROVOD_VERSION}
 
 # install tensorflow-datasets tensorflow-hub
 RUN pip --no-cache-dir install tensorflow-datasets tensorflow-hub
